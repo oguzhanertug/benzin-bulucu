@@ -20,14 +20,19 @@ const istasyonlar = [
     konum: { lat: 43.200, lng: 44.500 }
   },
 ]
-const Home = () => {
+function enUcuzuBul(istasyonlar) {
   let enUcuz = istasyonlar[0]
 
-for (let i = 0; i < istasyonlar.length; i++) {
-  if (istasyonlar[i].fiyat < enUcuz.fiyat) {
-    enUcuz = istasyonlar[i]
+  for (let i = 0; i < istasyonlar.length; i++) {
+    if (istasyonlar[i].fiyat < enUcuz.fiyat) {
+      enUcuz = istasyonlar[i]
+    }
   }
+
+  return enUcuz
 }
+const Home = () => {
+  let enUcuz = enUcuzuBul(istasyonlar)
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Benzin Bulucu</Text>
