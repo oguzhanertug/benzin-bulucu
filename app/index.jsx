@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Pressable, FlatList } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, Pressable, FlatList, TextInput } from 'react-native'
+import React, { useState } from 'react'
 const istasyonlar = [
   {
     isim: "A istasyonu",
@@ -21,6 +21,7 @@ const istasyonlar = [
   },
 ]
 function enUcuzuBul(istasyonlar) {
+  if (istasyonlar.length === 0) return null
   let enUcuz = istasyonlar[0]
 
   for (let i = 0; i < istasyonlar.length; i++) {
@@ -32,30 +33,63 @@ function enUcuzuBul(istasyonlar) {
   return enUcuz
 }
 const Home = () => {
-  let enUcuz = enUcuzuBul(istasyonlar)
+  const [yeniIsim, setYeniIsim] = useState("")
+const [liste, setListe] = useState(istasyonlar)
+let enUcuz = enUcuzuBul(liste)
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Benzin Bulucu</Text>
       <Text style={styles.subtitle}>En ucuz istasyonu hemen bul</Text>
       <Text style={styles.enUcuzBaslik}>🏆 En Ucuz İstasyon</Text>
-<View style={styles.enUcuzKart}>
-  <Text style={styles.kartIsim}>{enUcuz.isim}</Text>
-  <Text>{enUcuz.adres}</Text>
-  <Text>⛽ {enUcuz.fiyat} TL</Text>
-</View>
+{enUcuz && (
+  <View style={styles.enUcuzKart}>
+    <Text style={styles.kartIsim}>{enUcuz.isim}</Text>
+    <Text>{enUcuz.adres}</Text>
+    <Text>⛽ {enUcuz.fiyat} TL</Text>
+  </View>
+)}
+<TextInput
+  style={styles.input}
+  placeholder="A istasyonu"
+  value={yeniIsim}
+  onChangeText={(text) => setYeniIsim(text)}
+/>
+<Pressable style={styles.button} onPress={() => {
+  const yeniIstasyon = {
+    isim: yeniIsim,
+    adres: "Yeni adres",
+    fiyat: 35,
+    konum: { lat: 0, lng: 0 }
+  }
+  setListe([...liste, yeniIstasyon])
+  setYeniIsim("")
+}}>
+  <Text style={styles.buttonText}>İstasyon Ekle</Text>
+</Pressable>
       <Pressable style={styles.button}>
-        <Text style={styles.buttonText}>Başla</Text>
-      </Pressable>
+  <Text style={styles.buttonText}>Başla</Text>
+</Pressable>
+{liste.length === 0 && (
+  <Text style={{ color: '#999', marginVertical: 20 }}>
+    Henüz istasyon yok. Eklemek için yukarıdaki formu kullan.
+  </Text>
+)}
       <FlatList
-  data={istasyonlar}
+  data={liste}
   keyExtractor={(item) => item.isim}
+  contentContainerStyle={{ paddingBottom: 100 }}
   renderItem={({ item }) => (
-    <View style={styles.kart}>
-      <Text style={styles.kartIsim}>{item.isim}</Text>
-      <Text>{item.adres}</Text>
-      <Text>⛽ {item.fiyat} TL</Text>
-    </View>
-  )}
+  <View style={styles.kart}>
+    <Text style={styles.kartIsim}>{item.isim}</Text>
+    <Text>{item.adres}</Text>
+    <Text>⛽ {item.fiyat} TL</Text>
+    <Pressable onPress={() => {
+      setListe(liste.filter((i) => i.isim !== item.isim))
+    }}>
+      <Text style={{ color: 'red' }}>Sil</Text>
+    </Pressable>
+  </View>
+)}
 />
     </View>
   )
@@ -115,5 +149,13 @@ enUcuzKart: {
   borderRadius: 10,
   width: 300,
   marginBottom: 20,
+},
+input: {
+  borderWidth: 1,
+  borderColor: '#ccc',
+  borderRadius: 10,
+  padding: 10,
+  width: 300,
+  marginBottom: 10,
 },
 })
