@@ -1,6 +1,7 @@
+import { supabase } from '../lib/supabase'
 import IstasyonKarti from '../components/IstasyonKarti'
 import { StyleSheet, Text, View, FlatList, Pressable, TextInput } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 const istasyonlarData = [
   {
@@ -38,6 +39,23 @@ const Istasyonlar = () => {
   const [yeniIsim, setYeniIsim] = useState("")
   const [liste, setListe] = useState(istasyonlarData)
   let enUcuz = enUcuzuBul(liste)
+
+  useEffect(() => {
+  istasyonlariGetir()
+}, [])
+
+async function istasyonlariGetir() {
+  const { data, error } = await supabase
+    .from('istasyonlar')
+    .select('*')
+  
+  if (error) {
+    console.log('Hata:', error)
+    return
+  }
+
+  setListe(data)
+}
 
   return (
     <View style={styles.container}>
