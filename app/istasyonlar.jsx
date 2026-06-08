@@ -3,27 +3,6 @@ import IstasyonKarti from '../components/IstasyonKarti'
 import { StyleSheet, Text, View, FlatList, Pressable, TextInput } from 'react-native'
 import React, { useState, useEffect } from 'react'
 
-const istasyonlarData = [
-  {
-    isim: "A istasyonu",
-    adres: "x mahallesi",
-    fiyat: 40,
-    konum: { lat: 40.323, lng: 41.200 }
-  },
-  {
-    isim: "B istasyonu",
-    adres: "y mahallesi",
-    fiyat: 39,
-    konum: { lat: 41.500, lng: 42.300 }
-  },
-  {
-    isim: "C istasyonu",
-    adres: "z mahallesi",
-    fiyat: 38,
-    konum: { lat: 43.200, lng: 44.500 }
-  },
-]
-
 function enUcuzuBul(liste) {
   if (liste.length === 0) return null
   let enUcuz = liste[0]
@@ -37,25 +16,42 @@ function enUcuzuBul(liste) {
 
 const Istasyonlar = () => {
   const [yeniIsim, setYeniIsim] = useState("")
-  const [liste, setListe] = useState(istasyonlarData)
+  const [liste, setListe] = useState([])
   let enUcuz = enUcuzuBul(liste)
 
   useEffect(() => {
-  istasyonlariGetir()
-}, [])
+    istasyonlariGetir()
+  }, [])
 
-async function istasyonlariGetir() {
-  const { data, error } = await supabase
-    .from('istasyonlar')
-    .select('*')
-  
-  if (error) {
-    console.log('Hata:', error)
-    return
+  async function istasyonlariGetir() {
+    const { data, error } = await supabase
+      .from('istasyonlar')
+      .select('*')
+    if (error) {
+      console.log('Hata:', error)
+      return
+    }
+    setListe(data)
   }
 
-  setListe(data)
-}
+  async function istasyonEkle() {
+    if (yeniIsim === "") return
+    const { error } = await supabase
+      .from('istasyonlar')
+      .insert({
+        isim: yeniIsim,
+        adres: "Yeni adres",
+        fiyat: 35,
+        lat: 0,
+        lng: 0
+      })
+    if (error) {
+      console.log('Hata:', error)
+      return
+    }
+    setYeniIsim("")
+    istasyonlariGetir()
+  }
 
   return (
     <View style={styles.container}>
@@ -76,16 +72,7 @@ async function istasyonlariGetir() {
         value={yeniIsim}
         onChangeText={(text) => setYeniIsim(text)}
       />
-      <Pressable style={styles.button} onPress={() => {
-        const yeniIstasyon = {
-          isim: yeniIsim,
-          adres: "Yeni adres",
-          fiyat: 35,
-          konum: { lat: 0, lng: 0 }
-        }
-        setListe([...liste, yeniIstasyon])
-        setYeniIsim("")
-      }}>
+      <Pressable style={styles.button} onPress={() => istasyonEkle()}>
         <Text style={styles.buttonText}>İstasyon Ekle</Text>
       </Pressable>
 
@@ -100,13 +87,13 @@ async function istasyonlariGetir() {
         keyExtractor={(item) => item.isim}
         contentContainerStyle={{ paddingBottom: 100 }}
         renderItem={({ item }) => (
-  <IstasyonKarti
-    isim={item.isim}
-    adres={item.adres}
-    fiyat={item.fiyat}
-    onSil={() => setListe(liste.filter((i) => i.isim !== item.isim))}
-  />
-)}
+          <IstasyonKarti
+            isim={item.isim}
+            adres={item.adres}
+            fiyat={item.fiyat}
+            onSil={() => setListe(liste.filter((i) => i.isim !== item.isim))}
+          />
+        )}
       />
     </View>
   )
@@ -138,13 +125,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: 300,
     marginBottom: 20,
-  },
-  kart: {
-    backgroundColor: '#f5f5f5',
-    padding: 15,
-    marginVertical: 8,
-    borderRadius: 10,
-    width: 300,
   },
   kartIsim: {
     fontSize: 18,
