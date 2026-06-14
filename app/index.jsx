@@ -9,7 +9,7 @@ const Home = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Benzin Bulucu</Text>
       <Text style={styles.subtitle}>En ucuz istasyonu hemen bul</Text>
-      <Pressable style={styles.button} onPress={() => router.push('/istasyonlar')}>
+      <Pressable style={styles.button} onPress={() => router.push('/giris')}>
         <Text style={styles.buttonText}>Başla</Text>
       </Pressable>
     </View>

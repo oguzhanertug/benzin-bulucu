@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router'
 import { supabase } from '../lib/supabase'
 import IstasyonKarti from '../components/IstasyonKarti'
 import { StyleSheet, Text, View, FlatList, Pressable, TextInput } from 'react-native'
@@ -16,12 +17,29 @@ function enUcuzuBul(liste) {
 
 const Istasyonlar = () => {
   const [yeniIsim, setYeniIsim] = useState("")
+  const [kullaniciEmail, setKullaniciEmail] = useState("")
   const [liste, setListe] = useState([])
+  const router = useRouter()
   let enUcuz = enUcuzuBul(liste)
 
   useEffect(() => {
-    istasyonlariGetir()
-  }, [])
+  istasyonlariGetir()
+  kullaniciBilgisiAl()
+}, [])
+
+async function kullaniciBilgisiAl() {
+  const { data } = await supabase.auth.getUser()
+  if (data?.user) {
+    setKullaniciEmail(data.user.email)
+  } else {
+    router.push('/giris')
+  }
+}
+
+async function cikisYap() {
+  await supabase.auth.signOut()
+  router.push('/giris')
+}
 
   async function istasyonlariGetir() {
     const { data, error } = await supabase
@@ -56,6 +74,10 @@ const Istasyonlar = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>İstasyonlar</Text>
+      <Text style={{ color: '#666', marginBottom: 10 }}>👤 {kullaniciEmail}</Text>
+      <Pressable onPress={cikisYap}>
+  <Text style={{ color: 'red', marginBottom: 10 }}>Çıkış Yap</Text>
+</Pressable>
 
       <Text style={styles.enUcuzBaslik}>🏆 En Ucuz İstasyon</Text>
       {enUcuz && (
