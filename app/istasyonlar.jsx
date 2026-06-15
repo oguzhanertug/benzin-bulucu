@@ -74,6 +74,9 @@ async function cikisYap() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>İstasyonlar</Text>
+      <Pressable style={[styles.button, { backgroundColor: '#9b59b6' }]} onPress={() => router.push('/ai-oneri')}>
+  <Text style={styles.buttonText}>🤖 AI Önerisi</Text>
+</Pressable>
       <Text style={{ color: '#666', marginBottom: 10 }}>👤 {kullaniciEmail}</Text>
       <Pressable onPress={cikisYap}>
   <Text style={{ color: 'red', marginBottom: 10 }}>Çıkış Yap</Text>
