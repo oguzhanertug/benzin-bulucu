@@ -25,33 +25,44 @@ function mockAiOneri(istasyonAdi) {
 
 const AiOneri = () => {
   const [oneri, setOneri] = useState(null)
+const [yukleniyor, setYukleniyor] = useState(false)
 
   async function oneriAlVeKaydet() {
-    const sonuc = mockAiOneri("A istasyonu")
-    setOneri(sonuc)
+  setYukleniyor(true)
+  
+  const sonuc = mockAiOneri("A istasyonu")
+  setOneri(sonuc)
 
-    const { error } = await supabase
-      .from('ai_oneriler')
-      .insert({
-        istasyon_adi: "A istasyonu",
-        sarj_suresi: sonuc.sarjSuresi,
-        oneri: sonuc.oneri,
-        uygunluk_puani: sonuc.uygunlukPuani
-      })
+  const { error } = await supabase
+    .from('ai_oneriler')
+    .insert({
+      istasyon_adi: "A istasyonu",
+      sarj_suresi: sonuc.sarjSuresi,
+      oneri: sonuc.oneri,
+      uygunluk_puani: sonuc.uygunlukPuani
+    })
 
-    if (error) {
-      console.log('Hata:', error)
-      Alert.alert("Hata", "Kaydedilemedi: " + error.message)
-    }
+  if (error) {
+    console.log('Hata:', error)
+    Alert.alert("Hata", "Kaydedilemedi: " + error.message)
   }
+
+  setYukleniyor(false)
+}
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>🤖 AI Önerisi</Text>
-
-      <Pressable style={styles.button} onPress={oneriAlVeKaydet}>
-        <Text style={styles.buttonText}>Öneri Al</Text>
-      </Pressable>
+      
+<Pressable 
+  style={[styles.button, yukleniyor && { backgroundColor: '#95a5a6' }]} 
+  onPress={oneriAlVeKaydet}
+  disabled={yukleniyor}
+>
+  <Text style={styles.buttonText}>
+    {yukleniyor ? "Yükleniyor..." : "Öneri Al"}
+  </Text>
+</Pressable>
 
       {oneri && (
         <View style={styles.kart}>
