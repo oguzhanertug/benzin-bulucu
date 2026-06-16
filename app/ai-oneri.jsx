@@ -53,7 +53,7 @@ const [yukleniyor, setYukleniyor] = useState(false)
   return (
     <View style={styles.container}>
       <Text style={styles.title}>🤖 AI Önerisi</Text>
-      
+
 <Pressable 
   style={[styles.button, yukleniyor && { backgroundColor: '#95a5a6' }]} 
   onPress={oneriAlVeKaydet}
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   button: {
-    backgroundColor: '#2ecc71',
+   backgroundColor: '#8e44ad',
     paddingHorizontal: 40,
     paddingVertical: 15,
     borderRadius: 10,
